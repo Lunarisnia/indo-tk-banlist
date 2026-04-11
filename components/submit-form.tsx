@@ -110,7 +110,7 @@ export default function SubmitForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
       <div className="flex flex-col gap-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-[#FF2D6E]/60">Player to ban</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-[#FF2D6E]/60">Reported player</span>
         <input
           name="playerName"
           type="text"
