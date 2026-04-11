@@ -7,3 +7,4 @@ AlphaZero
 Legendre
 Canka
 TGN
+NoDrop
