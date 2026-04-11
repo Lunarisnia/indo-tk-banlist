@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 export default function Banlist({ names }: { names: string[] }) {
@@ -9,6 +9,30 @@ export default function Banlist({ names }: { names: string[] }) {
     : names;
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const [thumbHeight, setThumbHeight] = useState(0);
+  const [thumbTop, setThumbTop] = useState(0);
+  const [showThumb, setShowThumb] = useState(false);
+
+  const updateThumb = useCallback(() => {
+    const el = parentRef.current;
+    if (!el) return;
+    const ratio = el.clientHeight / el.scrollHeight;
+    setShowThumb(ratio < 1);
+    setThumbHeight(ratio * el.clientHeight + 4);
+    setThumbTop((el.scrollTop / el.scrollHeight) * el.clientHeight);
+  }, []);
+
+  useEffect(() => {
+    updateThumb();
+  }, [filtered.length, updateThumb]);
+
+  useEffect(() => {
+    const el = parentRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(updateThumb);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [updateThumb]);
 
   const virtualizer = useVirtualizer({
     count: filtered.length,
@@ -33,25 +57,37 @@ export default function Banlist({ names }: { names: string[] }) {
           <span className="block font-normal italic">You are not banned from any rookie tournament.</span>
         </div>
       )}
-      <div
-        ref={parentRef}
-        className="w-full overflow-auto min-h-[540px] max-h-[540px] [scrollbar-color:#FF2D6E_#141414] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-[#141414] [&::-webkit-scrollbar-thumb]:bg-[#FF2D6E]"
-      >
-        <ul
-          style={{ height: virtualizer.getTotalSize(), position: "relative" }}
+      <div className="relative w-full">
+        <div
+          ref={parentRef}
+          onScroll={updateThumb}
+          className="w-full overflow-y-scroll max-h-[540px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {virtualizer.getVirtualItems().map((item) => (
-            <li
-              key={item.key}
-              data-index={item.index}
-              ref={virtualizer.measureElement}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${item.start}px)` }}
-              className="border-2 border-[#FF2D6E] py-3 px-4 text-[#FF2D6E] font-medium break-words"
-            >
-              {filtered[item.index]}
-            </li>
-          ))}
-        </ul>
+          <ul
+            style={{ height: virtualizer.getTotalSize(), position: "relative" }}
+          >
+            {virtualizer.getVirtualItems().map((item) => (
+              <li
+                key={item.key}
+                data-index={item.index}
+                ref={virtualizer.measureElement}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${item.start}px)` }}
+                className="border-2 border-[#FF2D6E] py-3 px-4 text-[#FF2D6E] font-medium break-words"
+              >
+                {filtered[item.index]}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {showThumb && (
+          <div className="absolute right-0 top-0 bottom-0 w-1.5 pointer-events-none">
+            <div
+              className="absolute w-full bg-[#FF2D6E]"
+              style={{ height: thumbHeight, top: thumbTop }}
+            />
+          </div>
+        )}
       </div>
     </>
   );
