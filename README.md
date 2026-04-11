@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🥊 Indo Tekken Rookie Banlist
 
-## Getting Started
+> **You are hereby banned from farming money at a rookie tournament.**
 
-First, run the development server:
+A community-maintained website for the Indonesian Tekken scene that tracks players who are **not allowed** to compete in rookie-tier money matches. If you're too good for rookies, you're on this list — and everyone will know it.
+
+---
+
+## 🎮 What Is This?
+
+Rookie tournaments exist so new and developing players can compete without being stomped by veterans fishing for easy prize money. This site maintains a **public banlist** of players who have been flagged by the community for doing exactly that.
+
+- 📋 **Browse the banlist** — sorted alphabetically, always up to date
+- 📝 **Submit a ban** — flag a player with evidence (tournament results or community reports)
+- 🔍 **Community-reviewed** — all submissions go through review before being added
+
+---
+
+## 🚀 Running Locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗂️ How the Banlist Works
 
-## Learn More
+- The banlist lives in `public/banlist.txt` — one player name per line
+- Submissions are saved as markdown files under `submissions/`
+- After review, approved names are manually added to `banlist.txt`
+- To submit a ban, open a PR or use the in-app submission form at `/submit`
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **[Next.js](https://nextjs.org)** — React framework
+- **Tailwind CSS** — styling
+- **TypeScript** — type safety
+- **pnpm** — package manager
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤝 Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Want to nominate someone for the banlist? Use the submission form on the site, or open a PR directly against `public/banlist.txt` with evidence.
+
+All contributions are subject to community review.
