@@ -49,6 +49,19 @@ export default function AboutMe() {
           consistently placing high in{" "}
           <span className="text-[#FF2D6E] font-semibold">OPEN TOURNAMENTS</span>.
         </p>
+        <ul className="flex flex-col gap-1.5 text-sm text-white/70 mt-1">
+          {[
+            "Has ever reached God of Destruction rank",
+            "Consistently finishing Top 8 in Open Tournaments",
+            "Has previously finished top 3 in a Rookie Tournament",
+            "Flagged by community input",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className="text-[#FF2D6E] mt-0.5 shrink-0">▸</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
         <p className="text-sm leading-relaxed text-justify">
           When you submit a request, it will go through a review process where
           we research with the community whether the player truly belongs on the
