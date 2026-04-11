@@ -27,6 +27,12 @@ export default function Banlist({ names }: { names: string[] }) {
         onChange={(e) => setQuery(e.target.value)}
         className="w-full px-4 py-4 text-base bg-transparent text-[#FF2D6E] placeholder-[#FF2D6E] border-2 border-[#FF2D6E] outline-none mb-3"
       />
+      {query && filtered.length === 0 && (
+        <div className="w-full border-2 border-[#FF2D6E] py-16 px-4 mb-3 text-[#FF2D6E] font-medium text-center">
+          <span className="block font-bold text-[30px]">CONGRATULATIONS!</span>
+          <span className="block font-normal italic">You are not banned from any rookie tournament.</span>
+        </div>
+      )}
       <div
         ref={parentRef}
         className="w-full overflow-auto min-h-[540px] max-h-[540px] [scrollbar-color:#FF2D6E_#141414] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-[#141414] [&::-webkit-scrollbar-thumb]:bg-[#FF2D6E]"
