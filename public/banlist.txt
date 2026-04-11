@@ -6,3 +6,4 @@ Astha
 AlphaZero
 Legendre
 Canka
+TGN
