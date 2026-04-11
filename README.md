@@ -30,8 +30,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## 🗂️ How the Banlist Works
 
 - The banlist lives in `public/banlist.txt` — one player name per line
-- Submissions are saved as markdown files under `submissions/`
-- After review, approved names are manually added to `banlist.txt`
+- After review, approved names are automatically added to `banlist.txt`
 - To submit a ban, open a PR or use the in-app submission form at `/submit`
 
 ---
