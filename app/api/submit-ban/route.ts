@@ -75,8 +75,6 @@ ${submittedBy.trim()}
       body: fileContent,
       head: branch,
       base: "main",
-      assignees: ["Lunarisnia"],
-      labels: ["banlist-submission"],
     }),
   });
 
