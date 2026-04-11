@@ -100,7 +100,7 @@ export default function SubmitForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full py-4 border-2 border-[#FF2D6E] text-[#FF2D6E] uppercase tracking-widest font-bold text-base hover:bg-[#FF2D6E] hover:text-[#141414] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-4 border-2 border-[#FF2D6E] text-[#FF2D6E] uppercase tracking-widest font-bold text-base cursor-pointer hover:bg-[#FF2D6E] hover:text-[#141414] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {status === "loading" ? "Submitting…" : "Submit ban request"}
       </button>
