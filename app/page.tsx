@@ -1,7 +1,7 @@
 import { Bebas_Neue } from "next/font/google";
 import { loadBanlist } from "@/lib/banlist";
-import BanlistClient from "@/components/banlist-client";
 import WaveBackground from "@/components/wave-background";
+import Banlist from "@/components/banlist";
 
 const bebas = Bebas_Neue({
   weight: "400",
@@ -18,7 +18,7 @@ export default async function Home() {
     >
       <WaveBackground />
 
-      <div className="relative z-10 w-full max-w-2xl px-8 py-16 flex flex-col gap-4">
+      <div className="relative z-10 w-full max-w-4xl px-8 py-16 flex flex-col gap-4">
         <div className="text-center mb-4">
           <h1
             className="uppercase leading-none"
@@ -36,7 +36,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <BanlistClient names={banlist} />
+        <Banlist names={banlist} />
       </div>
     </div>
   );
