@@ -56,3 +56,8 @@ jobs:
     needs: validate
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
+
+  deploy-2nd-time-cuz-race-conditions-and-i-am-lazy:
+    needs: validate
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
