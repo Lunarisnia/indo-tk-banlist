@@ -5,3 +5,4 @@ R-TECH
 Astha
 AlphaZero
 Legendre
+Canka
