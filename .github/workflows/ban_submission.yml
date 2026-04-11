@@ -31,8 +31,7 @@ jobs:
           git commit -m "ban: add player from merged PR #${{ github.event.pull_request.number }}"
           git push
 
-      - name: Post validation summary
-        if: success()
+      - name: Post comment
         uses: actions/github-script@v7
         with:
           script: |
@@ -47,3 +46,8 @@ jobs:
               repo: context.repo.repo,
               body: `**Ban submission validated.**\n\nPlayer \`${name}\` submitted by \`${by}\` is pending review.`,
             });
+
+  deploy:
+    needs: validate
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

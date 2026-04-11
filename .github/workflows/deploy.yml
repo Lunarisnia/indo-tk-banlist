@@ -3,6 +3,10 @@ name: Deploy to Vercel
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "public/banlist.txt"
+      - "submissions/**"
+  workflow_call:
   workflow_dispatch:
 
 jobs:
