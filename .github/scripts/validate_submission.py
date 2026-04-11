@@ -4,7 +4,7 @@ import sys
 
 body = os.environ["PR_BODY"]
 
-# Check player name
+# Extract player name
 match = re.search(r"Player name.*?```\s*\n(.+?)\n```", body, re.DOTALL)
 if not match:
     print("::error::Could not find player name block in PR description")
@@ -17,7 +17,7 @@ if not name or name == "<name here>":
 
 print(f"Player name: {name!r}")
 
-# Check submitted by
+# Extract submitted by
 match_by = re.search(r"Submitted By.*?```\s*\n(.+?)\n```", body, re.DOTALL)
 if not match_by:
     print("::error::Could not find 'Submitted By' block in PR description")
@@ -29,3 +29,10 @@ if not submitted_by or submitted_by == "<name here>":
     sys.exit(1)
 
 print(f"Submitted by: {submitted_by!r}")
+
+# Append to banlist
+banlist_path = "public/banlist.txt"
+with open(banlist_path, "a") as f:
+    f.write(name + "\n")
+
+print(f"Appended {name!r} to {banlist_path}")

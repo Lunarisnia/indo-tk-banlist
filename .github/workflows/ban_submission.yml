@@ -2,24 +2,34 @@ name: Ban Submission Check
 
 on:
   pull_request:
+    types: [closed]
     branches: [main]
   workflow_dispatch:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.body, 'Rookie Banlist Submission')
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'ban:')
 
     permissions:
+      contents: write
       pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate submission
+      - name: Append player to banlist
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: python3 .github/scripts/validate_submission.py
+
+      - name: Commit banlist update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/banlist.txt
+          git commit -m "ban: add player from merged PR #${{ github.event.pull_request.number }}"
+          git push
 
       - name: Post validation summary
         if: success()
