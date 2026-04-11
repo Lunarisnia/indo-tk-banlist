@@ -8,6 +8,9 @@ export default function SubmitForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [prUrl, setPrUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [fields, setFields] = useState({ playerName: "", evidence: "", submittedBy: "" });
+
+  const allFilled = Object.values(fields).every((v) => v.trim() !== "");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,6 +72,8 @@ export default function SubmitForm() {
           type="text"
           placeholder="Player name (exact, as it appears in-game)"
           required
+          value={fields.playerName}
+          onChange={(e) => setFields((f) => ({ ...f, playerName: e.target.value }))}
           className="w-full px-4 py-4 text-base bg-transparent text-[#FF2D6E] placeholder-[#FF2D6E]/60 border-2 border-[#FF2D6E] outline-none"
         />
         <textarea
@@ -76,6 +81,8 @@ export default function SubmitForm() {
           placeholder="Evidence — tournament results or community banlist links"
           required
           rows={4}
+          value={fields.evidence}
+          onChange={(e) => setFields((f) => ({ ...f, evidence: e.target.value }))}
           className="w-full px-4 py-3 text-base bg-transparent text-[#FF2D6E] placeholder-[#FF2D6E]/60 border-2 border-[#FF2D6E] outline-none resize-none"
         />
       </div>
@@ -87,6 +94,8 @@ export default function SubmitForm() {
           type="text"
           placeholder="Your in-game name (for confirmation purposes)"
           required
+          value={fields.submittedBy}
+          onChange={(e) => setFields((f) => ({ ...f, submittedBy: e.target.value }))}
           className="w-full px-4 py-4 text-base bg-transparent text-[#FF2D6E] placeholder-[#FF2D6E]/60 border-2 border-[#FF2D6E] outline-none"
         />
       </div>
@@ -99,8 +108,8 @@ export default function SubmitForm() {
 
       <button
         type="submit"
-        disabled={status === "loading"}
-        className="w-full py-4 border-2 border-[#FF2D6E] text-[#FF2D6E] uppercase tracking-widest font-bold text-base cursor-pointer hover:bg-[#FF2D6E] hover:text-[#141414] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!allFilled || status === "loading"}
+        className="w-full py-4 border-2 border-[#FF2D6E] text-[#FF2D6E] uppercase tracking-widest font-bold text-base cursor-pointer hover:enabled:bg-[#FF2D6E] hover:enabled:text-[#141414] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {status === "loading" ? "Submitting…" : "Submit ban request"}
       </button>

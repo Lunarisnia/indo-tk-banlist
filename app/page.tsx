@@ -43,7 +43,7 @@ export default async function Home() {
           href="/submit"
           className="w-full py-4 border-2 border-[#FF2D6E] text-[#FF2D6E] uppercase tracking-widest font-bold text-base text-center hover:bg-[#FF2D6E] hover:text-[#141414] transition-colors"
         >
-          Submit a ban
+          BANLIST SUBMISSION FORM
         </Link>
       </div>
     </div>
