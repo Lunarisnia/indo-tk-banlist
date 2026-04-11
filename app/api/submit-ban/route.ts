@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 
-const REPO = process.env.GH_REPO!; // e.g. "Lounarisnia/indo-tk-banlist"
+const REPO = process.env.GH_REPO!;
 const TOKEN = process.env.GH_PAT!;
 
 async function gh(path: string, options: RequestInit = {}) {
@@ -22,83 +22,61 @@ async function gh(path: string, options: RequestInit = {}) {
 }
 
 export async function POST(request: NextRequest) {
-  const { playerName, reason, description, evidence, submittedBy } =
-    await request.json();
+  const { playerName, evidence, submittedBy } = await request.json();
 
   if (!playerName?.trim() || !evidence?.trim() || !submittedBy?.trim()) {
     return Response.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   const name = playerName.trim();
-
-  // Check duplicate
-  const fileData = await gh(`/repos/${REPO}/contents/public/banlist.txt`);
-  const currentContent = Buffer.from(fileData.content, "base64").toString("utf-8");
-  if (currentContent.split("\n").map((l) => l.trim()).includes(name)) {
-    return Response.json(
-      { error: "Player is already on the banlist" },
-      { status: 409 }
-    );
-  }
+  const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const branch = `ban/${slug}-${Date.now()}`;
 
   // Get main SHA
   const ref = await gh(`/repos/${REPO}/git/ref/heads/main`);
   const mainSha: string = ref.object.sha;
 
   // Create branch
-  const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-  const branch = `ban/${slug}-${Date.now()}`;
   await gh(`/repos/${REPO}/git/refs`, {
     method: "POST",
     body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: mainSha }),
   });
 
-  // Append name to banlist.txt
-  const updated = currentContent.trimEnd() + "\n" + name + "\n";
-  await gh(`/repos/${REPO}/contents/public/banlist.txt`, {
-    method: "PUT",
-    body: JSON.stringify({
-      message: `ban: add ${name}`,
-      content: Buffer.from(updated).toString("base64"),
-      sha: fileData.sha,
-      branch,
-    }),
-  });
-
-  // Open PR using the same format the ban_submission workflow expects
-  const prBody = `## Rookie Banlist Submission
+  // Create submission file
+  const fileContent = `## Rookie Banlist Submission
 
 **Player name (exact, as it appears in-game):**
 \`\`\`
 ${name}
 \`\`\`
 
-**Reason for ban:**
-${reason}
+**Evidence (Tournament results or community banlist):**
+${evidence.trim()}
 
-**Description:**
-${description}
-
-**Evidence:**
-${evidence?.trim() || "_No evidence provided._"}
-
-**Reported by:**
+**Submitted By:**
+\`\`\`
 ${submittedBy.trim()}
-
----
-
-**Checklist:**
-- [x] Name added to \`public/banlist.txt\` (one entry per line, no trailing spaces)
-- [x] No duplicate — searched existing banlist before submitting
+\`\`\`
 `;
+
+  await gh(`/repos/${REPO}/contents/submissions/${slug}-${Date.now()}.md`, {
+    method: "PUT",
+    body: JSON.stringify({
+      message: `ban: submit ${name}`,
+      content: Buffer.from(fileContent).toString("base64"),
+      branch,
+    }),
+  });
 
   const pr = await gh(`/repos/${REPO}/pulls`, {
     method: "POST",
     body: JSON.stringify({
       title: `ban: ${name}`,
-      body: prBody,
+      body: fileContent,
       head: branch,
       base: "main",
+      assignees: ["Lunarisnia"],
+      labels: ["banlist-submission"],
     }),
   });
 

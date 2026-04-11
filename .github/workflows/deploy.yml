@@ -3,12 +3,6 @@ name: Deploy to Vercel
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "public/banlist.txt"
-  workflow_run:
-    workflows: ["Ban Submission Check"]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 jobs:

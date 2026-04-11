@@ -3,79 +3,23 @@ name: Ban Submission Check
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "public/banlist.txt"
-  push:
-    branches: [main]
-    paths:
-      - "public/banlist.txt"
+  workflow_dispatch:
 
 jobs:
-  # Runs post-merge on push — no validation needed, just signals deploy to proceed
-  merged:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Ban submission merged. Signalling deploy."
-
   validate:
     runs-on: ubuntu-latest
-    # Only run for PRs using the ban submission template
-    if: github.event_name == 'pull_request' && contains(github.event.pull_request.body, 'Rookie Banlist Submission')
+    if: contains(github.event.pull_request.body, 'Rookie Banlist Submission')
 
     permissions:
       pull-requests: write
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Check banlist.txt was modified
-        run: |
-          git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "public/banlist.txt" \
-            || (echo "::error::public/banlist.txt was not modified" && exit 1)
-
-      - name: Check player name is filled in
+      - name: Validate submission
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
-        run: |
-          python3 - <<'EOF'
-          import os, re, sys
-          body = os.environ["PR_BODY"]
-          # Find the code block after the "Player name" heading
-          match = re.search(r"Player name.*?```\s*\n(.+?)\n```", body, re.DOTALL)
-          if not match:
-              print("::error::Could not find player name block in PR description")
-              sys.exit(1)
-          name = match.group(1).strip()
-          if not name or name == "<name here>":
-              print("::error::Player name is empty or still contains placeholder")
-              sys.exit(1)
-          print(f"Player name: {name!r}")
-          EOF
-
-      - name: Check for duplicate entry
-        env:
-          PR_BODY: ${{ github.event.pull_request.body }}
-        run: |
-          python3 - <<'EOF'
-          import os, re, sys
-          body = os.environ["PR_BODY"]
-          match = re.search(r"Player name.*?```\s*\n(.+?)\n```", body, re.DOTALL)
-          if not match:
-              sys.exit(0)  # already caught above
-          name = match.group(1).strip()
-          with open("public/banlist.txt") as f:
-              lines = [l.strip() for l in f.readlines()]
-          # Count how many times the name appears (should be exactly 1 — the new addition)
-          count = lines.count(name)
-          if count > 1:
-              print(f"::error::'{name}' already exists in banlist.txt")
-              sys.exit(1)
-          print(f"No duplicate found for '{name}'")
-          EOF
+        run: python3 .github/scripts/validate_submission.py
 
       - name: Post validation summary
         if: success()
@@ -83,11 +27,13 @@ jobs:
         with:
           script: |
             const body = context.payload.pull_request.body;
-            const match = body.match(/Player name[\s\S]*?```\s*\n(.+?)\n```/);
-            const name = match ? match[1].trim() : "unknown";
+            const nameMatch = body.match(/Player name[\s\S]*?```\s*\n(.+?)\n```/);
+            const byMatch = body.match(/Submitted By[\s\S]*?```\s*\n(.+?)\n```/);
+            const name = nameMatch ? nameMatch[1].trim() : "unknown";
+            const by = byMatch ? byMatch[1].trim() : "unknown";
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `**Ban submission validated.**\n\nPlayer \`${name}\` will be added to the banlist on merge.`,
+              body: `**Ban submission validated.**\n\nPlayer \`${name}\` submitted by \`${by}\` is pending review.`,
             });

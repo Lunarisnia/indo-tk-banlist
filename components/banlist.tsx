@@ -46,7 +46,7 @@ export default function Banlist({ names }: { names: string[] }) {
     <>
       <input
         type="text"
-        placeholder="Enter your name here"
+        placeholder="Search your name here"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="w-full px-4 py-4 text-base bg-transparent text-[#FF2D6E] placeholder-[#FF2D6E] border-2 border-[#FF2D6E] outline-none mb-3"

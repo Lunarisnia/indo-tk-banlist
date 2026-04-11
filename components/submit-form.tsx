@@ -19,8 +19,6 @@ export default function SubmitForm() {
     const fd = new FormData(e.currentTarget);
     const payload = {
       playerName: fd.get("playerName"),
-      reason: "",
-      description: "",
       evidence: fd.get("evidence"),
       submittedBy: fd.get("submittedBy"),
     };
@@ -57,7 +55,7 @@ export default function SubmitForm() {
           rel="noopener noreferrer"
           className="inline-block mt-6 px-6 py-2 border-2 border-[#FF2D6E] text-[#FF2D6E] text-sm uppercase tracking-widest hover:bg-[#FF2D6E] hover:text-[#141414] transition-colors"
         >
-          View PR
+          View Submission
         </a>
       </div>
     );
@@ -70,7 +68,7 @@ export default function SubmitForm() {
         <input
           name="playerName"
           type="text"
-          placeholder="Player name (exact, as it appears in-game)"
+          placeholder="Player name (exact)"
           required
           value={fields.playerName}
           onChange={(e) => setFields((f) => ({ ...f, playerName: e.target.value }))}
@@ -92,7 +90,7 @@ export default function SubmitForm() {
         <input
           name="submittedBy"
           type="text"
-          placeholder="Your in-game name (for confirmation purposes)"
+          placeholder="Your in-game name"
           required
           value={fields.submittedBy}
           onChange={(e) => setFields((f) => ({ ...f, submittedBy: e.target.value }))}
