@@ -7,5 +7,5 @@ export async function loadBanlist() {
   const rawBanlist = await loadTextFile(path.join(process.cwd(), "public", "banlist.txt"));
   banlist.push(...rawBanlist.split("\n").filter((value) => value != ""))
 
-  return banlist
+  return banlist.sort((a, b) => a.localeCompare(b))
 }
