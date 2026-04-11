@@ -22,10 +22,23 @@ async function gh(path: string, options: RequestInit = {}) {
 }
 
 export async function POST(request: NextRequest) {
-  const { playerName, evidence, submittedBy } = await request.json();
+  const { playerName, evidence, submittedBy, cfTurnstileToken } = await request.json();
 
   if (!playerName?.trim() || !evidence?.trim() || !submittedBy?.trim()) {
     return Response.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    body: new URLSearchParams({
+      secret: process.env.CF_TURNSTILE_SECRET!,
+      response: cfTurnstileToken ?? "",
+      remoteip: request.headers.get("CF-Connecting-IP") ?? "",
+    }),
+  });
+  const verifyData = await verifyRes.json();
+  if (!verifyData.success) {
+    return Response.json({ error: "CAPTCHA verification failed." }, { status: 400 });
   }
 
   const name = playerName.trim();

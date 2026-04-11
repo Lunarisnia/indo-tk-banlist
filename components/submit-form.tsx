@@ -1,6 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+
+declare global {
+  interface Window {
+    turnstile: {
+      render: (container: HTMLElement, options: Record<string, unknown>) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+      getResponse: (widgetId: string) => string | undefined;
+    };
+  }
+}
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -9,6 +20,30 @@ export default function SubmitForm() {
   const [prUrl, setPrUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [fields, setFields] = useState({ playerName: "", evidence: "", submittedBy: "" });
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (turnstileRef.current && window.turnstile) {
+        widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY,
+          theme: "dark",
+        });
+      }
+    };
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.remove(widgetIdRef.current);
+      }
+    };
+  }, []);
 
   const allFilled = Object.values(fields).every((v) => v.trim() !== "");
 
@@ -16,11 +51,19 @@ export default function SubmitForm() {
     e.preventDefault();
     setStatus("loading");
 
+    const token = widgetIdRef.current ? window.turnstile?.getResponse(widgetIdRef.current) : undefined;
+    if (!token) {
+      setErrorMsg("Please complete the CAPTCHA.");
+      setStatus("error");
+      return;
+    }
+
     const fd = new FormData(e.currentTarget);
     const payload = {
       playerName: fd.get("playerName"),
       evidence: fd.get("evidence"),
       submittedBy: fd.get("submittedBy"),
+      cfTurnstileToken: token,
     };
 
     const res = await fetch("/api/submit-ban", {
@@ -37,6 +80,9 @@ export default function SubmitForm() {
       const data = await res.json().catch(() => ({}));
       setErrorMsg(data.error ?? "Something went wrong. Try again.");
       setStatus("error");
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.reset(widgetIdRef.current);
+      }
     }
   }
 
@@ -103,6 +149,8 @@ export default function SubmitForm() {
           {errorMsg}
         </p>
       )}
+
+      <div ref={turnstileRef} />
 
       <button
         type="submit"
