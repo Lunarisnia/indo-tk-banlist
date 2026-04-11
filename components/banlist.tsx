@@ -18,7 +18,7 @@ export default function Banlist({ names }: { names: string[] }) {
     if (!el) return;
     const ratio = el.clientHeight / el.scrollHeight;
     setShowThumb(ratio < 1);
-    setThumbHeight(ratio * el.clientHeight + 4);
+    setThumbHeight(ratio * el.clientHeight);
     setThumbTop((el.scrollTop / el.scrollHeight) * el.clientHeight);
   }, []);
 
