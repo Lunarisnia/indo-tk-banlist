@@ -45,6 +45,12 @@ export default async function Home() {
         >
           BANLIST SUBMISSION FORM
         </Link>
+
+        <p className="text-center text-sm" style={{ color: "#888888" }}>
+          This list is community maintained. If you see anyone missing or who
+          should not be on this list, please use the banlist submission form
+          above to submit a request for us to review.
+        </p>
       </div>
     </div>
   );
