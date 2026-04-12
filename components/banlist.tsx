@@ -53,7 +53,7 @@ export default function Banlist({ names }: { names: string[] }) {
       />
       {query && filtered.length === 0 && (
         <div className="w-full border-2 border-[#FF2D6E] py-16 px-4 mb-3 text-[#FF2D6E] font-medium text-center">
-          <span className="block font-bold text-[30px]">CONGRATULATIONS!</span>
+          <span className="block font-bold text-xl">CONGRATULATIONS!</span>
           <span className="block font-normal italic">You are not banned from any rookie tournament.</span>
         </div>
       )}
